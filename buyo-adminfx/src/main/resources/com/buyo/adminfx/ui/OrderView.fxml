@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.buyo.adminfx.ui.controllers.OrderController">
+    <top>
+        <ToolBar>
+            <Label text="Pedidos" />
+        </ToolBar>
+    </top>
+    <center>
+        <TableView fx:id="table">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="60" />
+                <TableColumn fx:id="colCustomerId" text="Cliente" prefWidth="120" />
+                <TableColumn fx:id="colTotal" text="Total" prefWidth="120" />
+                <TableColumn fx:id="colCreatedAt" text="Criado em" prefWidth="180" />
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>

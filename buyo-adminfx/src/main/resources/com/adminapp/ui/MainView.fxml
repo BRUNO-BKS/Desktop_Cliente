@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.adminapp.ui.controllers.MainController">
+    <stylesheets>
+        <URL value="@app.css"/>
+    </stylesheets>
+    <top>
+        <ToolBar>
+            <Label text="Sistema Administrativo" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <CheckBox fx:id="darkToggle" text="Tema escuro" onAction="#toggleTheme" />
+        </ToolBar>
+    </top>
+    <center>
+        <TabPane fx:id="tabPane">
+            <tabs>
+                <Tab text="Clientes" closable="false">
+                    <fx:include source="CustomerView.fxml"/>
+                </Tab>
+                <Tab text="Produtos" closable="false">
+                    <fx:include source="ProductView.fxml"/>
+                </Tab>
+                <Tab text="Pedidos" closable="false">
+                    <fx:include source="OrderView.fxml"/>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>
