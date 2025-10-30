@@ -7,6 +7,9 @@
     <top>
         <ToolBar>
             <Label text="Produtos" />
+            <Region ToolBar.alignment="CENTER" />
+            <Label text="Categoria:" />
+            <ComboBox fx:id="categoryFilter" prefWidth="180" promptText="Todas" />
         </ToolBar>
     </top>
     <center>
@@ -16,6 +19,8 @@
                 <TableColumn fx:id="colName" text="Nome" prefWidth="250" />
                 <TableColumn fx:id="colPrice" text="Preço" prefWidth="120" />
                 <TableColumn fx:id="colStock" text="Estoque" prefWidth="100" />
+                <TableColumn fx:id="colCategory" text="Categoria" prefWidth="160" />
+                <TableColumn fx:id="colImage" text="Imagem" prefWidth="120" />
             </columns>
         </TableView>
     </center>

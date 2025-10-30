@@ -12,7 +12,7 @@ import java.util.List;
 public class OrderDAO {
     public List<Order> listAll() {
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT id, customer_id, total, created_at FROM orders ORDER BY id DESC";
+        String sql = "SELECT id, usuario_id AS customer_id, total, data_pedido AS created_at FROM pedidos ORDER BY id DESC";
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -21,7 +21,7 @@ public class OrderDAO {
                         rs.getInt("id"),
                         rs.getInt("customer_id"),
                         rs.getBigDecimal("total"),
-                        rs.getTimestamp("created_at").toLocalDateTime()
+                        rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null
                 ));
             }
         } catch (Exception e) {

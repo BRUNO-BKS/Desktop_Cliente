@@ -12,7 +12,7 @@ import java.util.List;
 public class CustomerDAO {
     public List<Customer> listAll() {
         List<Customer> list = new ArrayList<>();
-        String sql = "SELECT id, name, email, phone FROM customers ORDER BY id DESC";
+        String sql = "SELECT id, nome AS name, email, telefone AS phone FROM usuarios ORDER BY id DESC";
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
