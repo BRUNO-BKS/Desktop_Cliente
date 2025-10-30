@@ -10,6 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 
 public class MainController {
     @FXML
@@ -79,7 +81,20 @@ public class MainController {
 
     @FXML
     public void onLogout(ActionEvent e) {
-        Platform.exit();
+        try {
+            Session.clear();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/buyo/adminfx/ui/LoginView.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root, 1000, 650);
+            var css = getClass().getResource("/com/buyo/adminfx/ui/styles.css");
+            if (css != null) scene.getStylesheets().add(css.toExternalForm());
+            var stage = (javafx.stage.Stage) ((Node) e.getSource()).getScene().getWindow();
+            stage.setTitle("Buyo AdminFX - Login");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception ex) {
+            Platform.exit();
+        }
     }
 
     private void setCenterView(String fxmlPath) {

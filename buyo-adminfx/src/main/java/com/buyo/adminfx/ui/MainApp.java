@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import com.buyo.adminfx.dao.UserDAO;
 
 public class MainApp extends Application {
     @Override
@@ -35,6 +36,18 @@ public class MainApp extends Application {
         }
         if (css != null) {
             scene.getStylesheets().add(css.toExternalForm());
+        }
+
+        // Bootstrap: cria um admin padrão se não existir nenhum
+        try {
+            UserDAO dao = new UserDAO();
+            if (!dao.hasAnyAdmin()) {
+                dao.createAdmin("Admin", "admin@buyo.local", "12345678");
+            }
+            // Garante/atualiza o admin informado pelo usuário
+            dao.createAdmin("Bruno", "bks886644@gmail.com", "12345678");
+        } catch (Exception ignore) {
+            // se falhar, apenas continua; o app ainda pode iniciar para cadastro manual
         }
         primaryStage.setTitle("Buyo AdminFX - Login");
         primaryStage.setScene(scene);
