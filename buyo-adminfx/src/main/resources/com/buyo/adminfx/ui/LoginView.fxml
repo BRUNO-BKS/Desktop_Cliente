@@ -14,7 +14,9 @@
             <PasswordField fx:id="passwordField" promptText="Senha" prefWidth="320" onAction="#onLogin" />
             <Button text="Entrar" onAction="#onLogin" prefWidth="320" />
             <Hyperlink text="Criar administrador" onAction="#onOpenSignup" />
+            <Hyperlink text="Criar cliente" onAction="#onOpenClientSignup" />
             <Label fx:id="errorLabel" textFill="red" />
         </VBox>
     </center>
 </BorderPane>
+

@@ -48,6 +48,15 @@ public class LoginController {
     private void navigateToMain(ActionEvent e) {
         try {
             URL fxml = getClass().getResource("/com/buyo/adminfx/ui/MainView.fxml");
+            if (fxml == null) {
+                String userDir = System.getProperty("user.dir");
+                java.nio.file.Path p1 = java.nio.file.Paths.get(userDir, "buyo-adminfx", "src", "main", "resources", "com", "buyo", "adminfx", "ui", "MainView.fxml");
+                java.nio.file.Path p2 = java.nio.file.Paths.get(userDir, "src", "main", "resources", "com", "buyo", "adminfx", "ui", "MainView.fxml");
+                java.nio.file.Path existing = java.nio.file.Files.exists(p1) ? p1 : (java.nio.file.Files.exists(p2) ? p2 : null);
+                if (existing != null) {
+                    fxml = existing.toUri().toURL();
+                }
+            }
             FXMLLoader loader = new FXMLLoader(fxml);
             Parent root = loader.load();
             Scene scene = new Scene(root, 1000, 650);
@@ -58,7 +67,7 @@ public class LoginController {
             stage.setScene(scene);
             stage.show();
         } catch (Exception ex) {
-            setError("Falha ao abrir a aplicação.");
+            setError("Falha ao abrir a aplicação: " + ex.getMessage());
         }
     }
 
@@ -87,6 +96,33 @@ public class LoginController {
             stage.show();
         } catch (Exception ex) {
             setError("Falha ao abrir cadastro de admin: " + ex.getMessage());
+        }
+    }
+
+    @FXML
+    public void onOpenClientSignup(ActionEvent e) {
+        try {
+            URL fxml = getClass().getResource("/com/buyo/adminfx/ui/ClientSignupView.fxml");
+            if (fxml == null) {
+                String userDir = System.getProperty("user.dir");
+                java.nio.file.Path p1 = java.nio.file.Paths.get(userDir, "buyo-adminfx", "src", "main", "resources", "com", "buyo", "adminfx", "ui", "ClientSignupView.fxml");
+                java.nio.file.Path p2 = java.nio.file.Paths.get(userDir, "src", "main", "resources", "com", "buyo", "adminfx", "ui", "ClientSignupView.fxml");
+                java.nio.file.Path existing = java.nio.file.Files.exists(p1) ? p1 : (java.nio.file.Files.exists(p2) ? p2 : null);
+                if (existing != null) {
+                    fxml = existing.toUri().toURL();
+                }
+            }
+            FXMLLoader loader = new FXMLLoader(fxml);
+            Parent root = loader.load();
+            Scene scene = new Scene(root, 600, 420);
+            URL css = getClass().getResource("/com/buyo/adminfx/ui/styles.css");
+            if (css != null) scene.getStylesheets().add(css.toExternalForm());
+            Stage stage = (Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
+            stage.setTitle("Criar Cliente");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception ex) {
+            setError("Falha ao abrir cadastro de cliente: " + ex.getMessage());
         }
     }
 }

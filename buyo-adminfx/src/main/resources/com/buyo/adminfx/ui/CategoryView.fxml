@@ -7,6 +7,10 @@
     <top>
         <ToolBar>
             <Label text="Categorias" />
+            <Separator />
+            <Button text="Adicionar" onAction="#onAdd" />
+            <Button text="Editar" onAction="#onEdit" />
+            <Button text="Remover" onAction="#onDelete" />
         </ToolBar>
     </top>
     <center>

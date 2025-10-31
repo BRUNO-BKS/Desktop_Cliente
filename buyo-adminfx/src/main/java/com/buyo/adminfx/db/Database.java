@@ -6,6 +6,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Database {
     private static Connection connection;
@@ -21,9 +24,31 @@ public class Database {
                 if (in != null) {
                     props.load(in);
                 } else {
-                    // Fallback: arquivo na raiz do projeto (Eclipse: diretório de trabalho)
-                    try (InputStream fin = new FileInputStream("db.properties")) {
-                        props.load(fin);
+                    // Fallbacks: caminhos comuns quando o resources não está no classpath
+                    boolean loaded = false;
+                    // 1) diretório de trabalho
+                    Path p0 = Paths.get("db.properties");
+                    // 2) projeto subpasta buyo-adminfx/resources
+                    String userDir = System.getProperty("user.dir");
+                    Path p1 = Paths.get(userDir, "buyo-adminfx", "src", "main", "resources", "db.properties");
+                    // 3) projeto subpasta buyo-adminfx raiz
+                    Path p2 = Paths.get(userDir, "buyo-adminfx", "db.properties");
+                    // 4) projeto raiz src/main/resources
+                    Path p3 = Paths.get(userDir, "src", "main", "resources", "db.properties");
+
+                    for (Path p : new Path[]{p0, p1, p2, p3}) {
+                        if (!loaded && p != null && Files.exists(p)) {
+                            try (InputStream fin = new FileInputStream(p.toFile())) {
+                                props.load(fin);
+                                loaded = true;
+                            }
+                        }
+                    }
+                    if (!loaded) {
+                        // Último recurso: tenta o nome no diretório de trabalho para que a exceção seja clara
+                        try (InputStream fin = new FileInputStream("db.properties")) {
+                            props.load(fin);
+                        }
                     }
                 }
             }
@@ -37,3 +62,4 @@ public class Database {
         }
     }
 }
+

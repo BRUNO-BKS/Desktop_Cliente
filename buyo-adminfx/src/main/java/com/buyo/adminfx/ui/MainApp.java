@@ -41,6 +41,8 @@ public class MainApp extends Application {
         // Bootstrap: cria um admin padrão se não existir nenhum
         try {
             UserDAO dao = new UserDAO();
+            dao.ensureUsersTable();
+            dao.ensureUserProfileColumns();
             if (!dao.hasAnyAdmin()) {
                 dao.createAdmin("Admin", "admin@buyo.local", "12345678");
             }
@@ -54,3 +56,4 @@ public class MainApp extends Application {
         primaryStage.show();
     }
 }
+

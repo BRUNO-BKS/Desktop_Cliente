@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 
-public class AdminSignupController {
+public class ClientSignupController {
     @FXML private TextField nameField;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
@@ -24,7 +24,7 @@ public class AdminSignupController {
     private final UserDAO userDAO = new UserDAO();
 
     @FXML
-    public void onCreateAdmin(ActionEvent e) {
+    public void onCreateClient(ActionEvent e) {
         String name = val(nameField);
         String email = val(emailField);
         String pass = val(passwordField);
@@ -41,17 +41,13 @@ public class AdminSignupController {
             setError("Senhas não conferem.");
             return;
         }
-        boolean exists = userDAO.existsByEmail(email);
-        boolean ok = exists
-                ? userDAO.promoteOrResetAdmin(name, email, pass)
-                : userDAO.createAdmin(name, email, pass);
+        boolean ok = userDAO.createClient(name, email, pass);
         if (!ok) {
             String reason = userDAO.getLastError();
-            setError("Falha ao criar/atualizar administrador" + (reason != null && !reason.isBlank() ? (": " + reason) : ". Verifique o email."));
+            setError("Falha ao criar/atualizar cliente" + (reason != null && !reason.isBlank() ? (": " + reason) : ". Verifique o email."));
             return;
         }
-        setSuccess(exists ? "Administrador atualizado. Redirecionando para login..." : "Administrador criado. Redirecionando para login...");
-        // volta ao login automaticamente
+        setSuccess("Cliente criado. Redirecionando para login...");
         onBackToLogin(e);
     }
 
@@ -73,8 +69,7 @@ public class AdminSignupController {
             Scene scene = new Scene(root, 1000, 650);
             URL css = getClass().getResource("/com/buyo/adminfx/ui/styles.css");
             if (css != null) scene.getStylesheets().add(css.toExternalForm());
-            // Usa qualquer controle da tela para obter o Stage (mais robusto que e.getSource())
-            Stage stage = (Stage) errorLabel.getScene().getWindow();
+            Stage stage = (Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
             stage.setTitle("Buyo AdminFX - Login");
             stage.setScene(scene);
             stage.show();

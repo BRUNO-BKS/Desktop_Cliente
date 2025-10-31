@@ -6,8 +6,10 @@ import com.buyo.adminfx.model.Product;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 public class ProductDAO {
     public List<Product> listAll() {
@@ -38,4 +40,71 @@ public class ProductDAO {
         }
         return list;
     }
+
+    public Integer createProduct(String name, BigDecimal price, Integer categoryId, String imageUrl, int stock, boolean active) {
+        if (name == null || name.isBlank() || price == null) return null;
+        String sqlProd = "INSERT INTO produtos (nome_produto, preco, categoria_id, imagem_url, ativo) VALUES (?,?,?,?,?)";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlProd, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, name.trim());
+            ps.setBigDecimal(2, price);
+            if (categoryId == null) ps.setNull(3, java.sql.Types.INTEGER); else ps.setInt(3, categoryId);
+            ps.setString(4, imageUrl);
+            ps.setInt(5, active ? 1 : 0);
+            int rows = ps.executeUpdate();
+            if (rows == 0) return null;
+            Integer newId = null;
+            try (ResultSet keys = ps.getGeneratedKeys()) { if (keys.next()) newId = keys.getInt(1); }
+            if (newId != null) {
+                // upsert estoque
+                try (PreparedStatement psEst = conn.prepareStatement("INSERT INTO estoque (produto_id, quantidade) VALUES (?,?) ON DUPLICATE KEY UPDATE quantidade=VALUES(quantidade)")) {
+                    psEst.setInt(1, newId);
+                    psEst.setInt(2, stock);
+                    psEst.executeUpdate();
+                }
+            }
+            return newId;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public boolean updateProduct(int id, String name, BigDecimal price, Integer categoryId, String imageUrl, int stock, boolean active) {
+        String sql = "UPDATE produtos SET nome_produto=?, preco=?, categoria_id=?, imagem_url=?, ativo=? WHERE id=?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setBigDecimal(2, price);
+            if (categoryId == null) ps.setNull(3, java.sql.Types.INTEGER); else ps.setInt(3, categoryId);
+            ps.setString(4, imageUrl);
+            ps.setInt(5, active ? 1 : 0);
+            ps.setInt(6, id);
+            int r1 = ps.executeUpdate();
+            int r2 = 1;
+            try (PreparedStatement psEst = conn.prepareStatement("INSERT INTO estoque (produto_id, quantidade) VALUES (?,?) ON DUPLICATE KEY UPDATE quantidade=VALUES(quantidade)")) {
+                psEst.setInt(1, id);
+                psEst.setInt(2, stock);
+                r2 = psEst.executeUpdate();
+            }
+            return r1 > 0 && r2 > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean deleteProduct(int id) {
+        try (Connection conn = Database.getConnection()) {
+            try (PreparedStatement psEst = conn.prepareStatement("DELETE FROM estoque WHERE produto_id = ?")) {
+                psEst.setInt(1, id);
+                psEst.executeUpdate();
+            }
+            try (PreparedStatement ps = conn.prepareStatement("DELETE FROM produtos WHERE id = ?")) {
+                ps.setInt(1, id);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
+

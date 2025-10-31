@@ -9,6 +9,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Alert;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class CategoryController implements SearchableController {
     @FXML private TableView<Category> table;
@@ -43,4 +50,80 @@ public class CategoryController implements SearchableController {
             return id.contains(q) || name.contains(q) || desc.contains(q);
         });
     }
+
+    private void refreshData() {
+        masterData.setAll(new CategoryDAO().listAll());
+    }
+
+    @FXML
+    public void onAdd(ActionEvent e) {
+        openForm(null);
+    }
+
+    @FXML
+    public void onEdit(ActionEvent e) {
+        Category sel = table.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            Alert a = new Alert(Alert.AlertType.INFORMATION);
+            a.setHeaderText(null);
+            a.setTitle("Editar categoria");
+            a.setContentText("Selecione uma categoria na lista.");
+            a.show();
+            return;
+        }
+        openForm(sel);
+    }
+
+    @FXML
+    public void onDelete(ActionEvent e) {
+        Category sel = table.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            Alert a = new Alert(Alert.AlertType.INFORMATION);
+            a.setHeaderText(null);
+            a.setTitle("Remover categoria");
+            a.setContentText("Selecione uma categoria na lista.");
+            a.show();
+            return;
+        }
+        Alert conf = new Alert(Alert.AlertType.CONFIRMATION);
+        conf.setHeaderText(null);
+        conf.setTitle("Remover categoria");
+        conf.setContentText("Tem certeza que deseja remover '" + sel.getName() + "'? Produtos vinculados ficarão sem categoria.");
+        conf.showAndWait().ifPresent(btn -> {
+            if (btn.getButtonData().isDefaultButton()) {
+                boolean ok = new CategoryDAO().deleteCategory(sel.getId());
+                if (!ok) {
+                    Alert err = new Alert(Alert.AlertType.ERROR);
+                    err.setHeaderText(null);
+                    err.setTitle("Remover categoria");
+                    err.setContentText("Falha ao remover.");
+                    err.show();
+                } else {
+                    refreshData();
+                }
+            }
+        });
+    }
+
+    private void openForm(Category category) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/buyo/adminfx/ui/CategoryForm.fxml"));
+            Parent root = loader.load();
+            CategoryFormController ctrl = loader.getController();
+            if (category != null) ctrl.setCategory(category);
+            Stage dlg = new Stage();
+            dlg.setTitle(category == null ? "Adicionar Categoria" : "Editar Categoria");
+            dlg.initModality(Modality.APPLICATION_MODAL);
+            dlg.setScene(new Scene(root, 480, 260));
+            dlg.showAndWait();
+            if (ctrl.isSaved()) refreshData();
+        } catch (Exception ex) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setHeaderText(null);
+            a.setTitle("Categoria");
+            a.setContentText("Falha ao abrir formulário: " + ex.getMessage());
+            a.show();
+        }
+    }
 }
+

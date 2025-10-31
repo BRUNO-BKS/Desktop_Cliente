@@ -1,5 +1,0 @@
-/* CSS básico para o JavaFX com.adminapp */
-.root { -fx-font-family: "Segoe UI", Arial, sans-serif; }
-.tab-pane .tab-header-area { -fx-background-color: #f5f5f5; }
-.button { -fx-background-radius: 6; }
-.table-view { -fx-background-color: white; -fx-border-color: #ddd; }

@@ -13,8 +13,16 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.Alert;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.math.BigDecimal;
+import java.net.URL;
 
 public class ProductController implements SearchableController {
     @FXML private TableView<Product> table;
@@ -116,4 +124,98 @@ public class ProductController implements SearchableController {
             return id.contains(q) || name.contains(q) || price.contains(q) || stock.contains(q) || category.contains(q);
         });
     }
+
+    private void refreshData() {
+        var dao = new ProductDAO();
+        masterData.setAll(dao.listAll());
+        // reconstroi filtro de categorias
+        if (categoryFilter != null) {
+            ObservableList<String> categories = FXCollections.observableArrayList();
+            categories.add("Todas");
+            masterData.stream()
+                .map(Product::getCategoryName)
+                .filter(s -> s != null && !s.isBlank())
+                .distinct()
+                .sorted()
+                .forEach(categories::add);
+            categoryFilter.setItems(categories);
+            categoryFilter.getSelectionModel().selectFirst();
+        }
+        refilter();
+    }
+
+    @FXML
+    public void onAdd(ActionEvent e) {
+        openForm(null);
+    }
+
+    @FXML
+    public void onEdit(ActionEvent e) {
+        Product sel = table.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            Alert a = new Alert(Alert.AlertType.INFORMATION);
+            a.setHeaderText(null);
+            a.setTitle("Editar produto");
+            a.setContentText("Selecione um produto na lista.");
+            a.show();
+            return;
+        }
+        openForm(sel);
+    }
+
+    @FXML
+    public void onDelete(ActionEvent e) {
+        Product sel = table.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            Alert a = new Alert(Alert.AlertType.INFORMATION);
+            a.setHeaderText(null);
+            a.setTitle("Remover produto");
+            a.setContentText("Selecione um produto na lista.");
+            a.show();
+            return;
+        }
+        Alert conf = new Alert(Alert.AlertType.CONFIRMATION);
+        conf.setHeaderText(null);
+        conf.setTitle("Remover produto");
+        conf.setContentText("Tem certeza que deseja remover '" + sel.getName() + "'? ");
+        conf.showAndWait().ifPresent(btn -> {
+            if (btn.getButtonData().isDefaultButton()) {
+                boolean ok = new ProductDAO().deleteProduct(sel.getId());
+                if (!ok) {
+                    Alert err = new Alert(Alert.AlertType.ERROR);
+                    err.setHeaderText(null);
+                    err.setTitle("Remover produto");
+                    err.setContentText("Falha ao remover.");
+                    err.show();
+                } else {
+                    refreshData();
+                }
+            }
+        });
+    }
+
+    private void openForm(Product product) {
+        try {
+            URL fxml = getClass().getResource("/com/buyo/adminfx/ui/ProductForm.fxml");
+            FXMLLoader loader = new FXMLLoader(fxml);
+            Parent root = loader.load();
+            ProductFormController ctrl = loader.getController();
+            if (product != null) ctrl.setProduct(product);
+            Stage dlg = new Stage();
+            dlg.setTitle(product == null ? "Adicionar Produto" : "Editar Produto");
+            dlg.initModality(Modality.APPLICATION_MODAL);
+            dlg.setScene(new Scene(root, 520, 380));
+            dlg.showAndWait();
+            if (ctrl.isSaved()) {
+                refreshData();
+            }
+        } catch (Exception ex) {
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setHeaderText(null);
+            a.setTitle("Produto");
+            a.setContentText("Falha ao abrir formulário: " + ex.getMessage());
+            a.show();
+        }
+    }
 }
+

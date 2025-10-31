@@ -7,7 +7,11 @@
     <top>
         <ToolBar>
             <Label text="Produtos" />
-            <Region ToolBar.alignment="CENTER" />
+            <Separator />
+            <Button text="Adicionar" onAction="#onAdd" />
+            <Button text="Editar" onAction="#onEdit" />
+            <Button text="Remover" onAction="#onDelete" />
+            <Separator />
             <Label text="Categoria:" />
             <ComboBox fx:id="categoryFilter" prefWidth="180" promptText="Todas" />
         </ToolBar>
@@ -25,3 +29,4 @@
         </TableView>
     </center>
 </BorderPane>
+

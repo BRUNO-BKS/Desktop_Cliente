@@ -5,6 +5,8 @@ public class User {
     private String name;
     private String email;
     private boolean admin;
+    private String phone;
+    private String photoUrl;
 
     public User() {}
 
@@ -26,4 +28,10 @@ public class User {
 
     public boolean isAdmin() { return admin; }
     public void setAdmin(boolean admin) { this.admin = admin; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getPhotoUrl() { return photoUrl; }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
 }

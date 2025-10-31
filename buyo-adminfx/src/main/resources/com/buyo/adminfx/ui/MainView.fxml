@@ -18,8 +18,8 @@
             <MenuButton fx:id="profileMenu" text="" focusTraversable="false">
                 <graphic>
                     <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Circle radius="14" styleClass="avatar" />
-                        <Label fx:id="userNameLabel" text="Usuário" />
+                        <Circle fx:id="avatarCircle" id="avatarCircle" radius="14" styleClass="avatar" />
+                        <Label fx:id="userNameLabel" id="userNameLabel" text="Usuário" />
                     </HBox>
                 </graphic>
                 <items>
@@ -34,10 +34,10 @@
             <padding><Insets top="20" left="15" right="15" bottom="20"/></padding>
             <Label text="Buyo AdminFX" style="-fx-font-size: 18; -fx-font-weight: bold;" />
             <Separator />
-            <Button text="Clientes" onAction="#showCustomers" prefWidth="180" />
-            <Button text="Produtos" onAction="#showProducts" prefWidth="180" />
-            <Button text="Pedidos" onAction="#showOrders" prefWidth="180" />
-            <Button text="Categorias" onAction="#showCategories" prefWidth="180" />
+            <Button fx:id="btnCustomers" text="Clientes" onAction="#showCustomers" prefWidth="180" />
+            <Button fx:id="btnProducts" text="Produtos" onAction="#showProducts" prefWidth="180" />
+            <Button fx:id="btnOrders" text="Pedidos" onAction="#showOrders" prefWidth="180" />
+            <Button fx:id="btnCategories" text="Categorias" onAction="#showCategories" prefWidth="180" />
             <Pane VBox.vgrow="ALWAYS" />
         </VBox>
     </left>
@@ -47,3 +47,4 @@
         </StackPane>
     </center>
 </BorderPane>
+
